@@ -1,25 +1,59 @@
+from curses.panel import new_panel
+import imp
+from operator import indexOf
 from server import app
-from flask import request, render_template, make_response
+from flask import request
 from flask_api import status
+from .game_object import game_object
+from random import randrange
 import os
 import json
 
 
+objects = []
+
+
 @app.route("/", methods=["GET"])
 def home():
-    return render_template("home.html", categories=app.config["CATEGORIES"]), status.HTTP_200_OK
+    return """
+███████╗██╗   ██╗██████╗  █████╗ ███████╗████████╗██╗  ██╗███████╗██████╗  <br>
+██╔════╝██║   ██║██╔══██╗██╔══██╗██╔════╝╚══██╔══╝██║  ██║██╔════╝██╔══██╗ <br>
+███████╗██║   ██║██████╔╝███████║█████╗     ██║   ███████║█████╗  ██████╔╝ <br>
+╚════██║██║   ██║██╔══██╗██╔══██║██╔══╝     ██║   ██╔══██║██╔══╝  ██╔══██╗ <br>
+███████║╚██████╔╝██████╔╝██║  ██║███████╗   ██║   ██║  ██║███████╗██║  ██║ <br>
+╚══════╝ ╚═════╝ ╚═════╝ ╚═╝  ╚═╝╚══════╝   ╚═╝   ╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝ <br>
+""", status.HTTP_200_OK
 
 
-@app.route("/categories/<category>", methods=["GET"])
-def list_category(category):
-    recepies = []
-    for recepie in os.listdir(f"{app.config['RECEPIE_PATH']}/{category}/"):
-        recepies.append(os.path.splitext(recepie)[0])
-    return render_template("category.html", category=category, recepies=recepies), status.HTTP_200_OK
+@app.route("/register", methods=["POST"])
+def register():
+    new_player = game_object(
+        {
+            "x": randrange(app.config['SPAWN_AREA']["x"]),
+            "y": randrange(app.config['SPAWN_AREA']["y"])
+        },
+        False,
+        game_object.PLAYER
+    )
+    objects.append(new_player)
+    player_id = objects.index(new_player)
+    print(f"Registering Player. ID: {player_id}")
+
+    json_str = json.dumps({
+            "id": player_id,
+            "pos": {
+                "x": new_player.pos["x"],
+                "y": new_player.pos["y"]
+            },
+            "aether": new_player.aether,
+            "destroyed": new_player.destroyed,
+            "type": new_player.type
+        }
+    )
+
+    return json_str, status.HTTP_200_OK
 
 
-@app.route("/recepies/<recepie>", methods=["GET"])
-def show_recepie(recepie):
-    with open(f"{app.config['RECEPIE_PATH']}/all_recepies/{recepie}.json") as recepie_file:
-        recepie_json = json.loads(recepie_file.read())
-        return render_template("recepie.html", name=recepie, json=recepie_json), status.HTTP_200_OK
+@app.route("/object", methods=["POST"])
+def spawn_object():
+    return "", status.HTTP_200_OK
