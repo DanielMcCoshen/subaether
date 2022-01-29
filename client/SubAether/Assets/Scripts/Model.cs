@@ -10,7 +10,7 @@ using UnityEngine;
     //
     // }
 
-public sealed class Model : MonoBehaviour {
+public class Model : MonoBehaviour {
     private static Model instance = null;
     private static readonly object instanceLock = new object();
     private List<Entity> ownedEntities;
