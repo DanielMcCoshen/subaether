@@ -20,6 +20,9 @@ public sealed class Model : MonoBehaviour {
 
     private async void registerPlayer() {
         HttpResponseMessage response = await client.PostAsync(hostName + "/register", null);
+        Entity player = JsonUtility.FromJson<Entity>(await response.Content.ReadAsStringAsync());
+        ownedEntities.Add(player);
+        Debug.Log(ownedEntities);
     }
 
     private IEnumerator registerRoutine() {
