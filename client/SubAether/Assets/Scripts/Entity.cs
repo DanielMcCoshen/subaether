@@ -1,3 +1,7 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
 public enum EntityType {
     Player,
     Torpedo,
@@ -9,14 +13,14 @@ public class Entity {
     public int Identity { get; }
     public bool AetherStatus { get; set; }
     public bool DestroyStatus { get; set; }
-    public (int, int) Position { get; set; }
+    public Vector2 Position { get; set; }
     public EntityType Type { get; }
 
     public Entity (
         int identity, 
         bool aetherStatus, 
         bool destroyStatus,
-        (int, int) position,
+        Vector2 position,
         EntityType type) {
             Identity = identity;
             AetherStatus = aetherStatus;
